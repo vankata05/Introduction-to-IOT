@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Analysis</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .btn-clicked {
+            background-color: #0056b3 !important;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        #result {
+            display: none; /* Initially hide the results field */
+        }
+
+        #result-label {
+            display: none; /* Initially hide the "Results" label */
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h1 class="text-center">Student Marks Analysis</h1>
+            </div>
+            <div class="card-body">
+                <div class="form-group text-center">
+                    <label for="requestType">Select Request:</label>
+                    <select class="form-control" id="requestType">
+                        <option value="tests">Average Test Scores</option>
+                        <option value="failed">Failed Students</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-primary" id="submitButton" onclick="makeRequest()">Submit</button>
+                </div>
+                <div class="mt-4">
+                    <h2 class="text-center" id="result-label">Results</h2>
+                    <textarea class="form-control" id="result" rows="5" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function makeRequest() {
+            const requestType = document.getElementById('requestType').value;
+            const submitButton = document.getElementById('submitButton');
+            const resultField = document.getElementById('result');
+            const resultLabel = document.getElementById('result-label');
+
+            // Change the button style to indicate it has been clicked
+            submitButton.classList.add('btn-clicked');
+            setTimeout(() => {
+                submitButton.classList.remove('btn-clicked');
+            }, 500);
+
+            // Show the results field and label
+            resultField.style.display = 'block';
+            resultLabel.style.display = 'block';
+
+            fetch(`/${requestType}`)
+                .then(response => response.json())
+                .then(data => {
+                    let result = '';
+                    data.forEach(student => {
+                        if (requestType === 'tests') {
+                            result += `${student.Name}: ${student.AverageTest.toFixed(2)}\n`;
+                        } else {
+                            result += `${student.Name}: ${student.AverageGrade.toFixed(2)}\n`;
+                        }
+                    });
+                    resultField.value = result;
+                });
+        }
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
